@@ -3,21 +3,40 @@
     <PreferenceCategory android:title="@string/settings_cagetogy_broker">
 
         <EditTextPreference
-            android:key="mqtt_host"
+            android:key="@string/settings_item_mqtt_host_key"
             android:selectAllOnFocus="true"
             android:singleLine="true"
             android:title="@string/settings_item_mqtt_host_title"
             android:summary="@string/settings_item_mqtt_host_summary"/>
         <EditTextPreference
-            android:key="mqtt_port"
+            android:key="@string/settings_item_mqtt_port_key"
             android:selectAllOnFocus="true"
             android:singleLine="true"
             android:title="@string/settings_item_mqtt_port_title"
             android:summary="@string/settings_item_mqtt_port_summary"/>
         <SwitchPreference
             android:defaultValue="false"
-            android:key="mqtt_use_ssl"
+            android:key="@string/settings_item_mqtt_use_ssl_key"
             android:title="@string/settings_item_mqtt_use_ssl_title"
             android:summary="@string/settings_item_mqtt_use_ssl_summary"/>
+        <EditTextPreference
+            android:key="@string/settings_item_mqtt_username_key"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/settings_item_mqtt_username_title"
+            android:summary="@string/settings_item_mqtt_username_summary"/>
+        <EditTextPreference
+            android:key="@string/settings_item_mqtt_password_key"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/settings_item_mqtt_password_title"
+            android:summary="@string/settings_item_mqtt_password_summary"
+            android:inputType="textPassword"/>
+        <EditTextPreference
+            android:key="@string/settings_item_mqtt_base_topic_key"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/settings_item_mqtt_base_topic_title"
+            android:summary="@string/settings_item_mqtt_base_topic_summary"/>
     </PreferenceCategory>
 </PreferenceScreen>
