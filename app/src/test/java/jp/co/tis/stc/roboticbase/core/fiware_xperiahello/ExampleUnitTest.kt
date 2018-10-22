@@ -1,4 +1,4 @@
-package jp.co.tis.stc.boboticbase.core.fiware_xperiahello
+package jp.co.tis.stc.roboticbase.core.fiware_xperiahello
 
 import org.junit.Test
 
