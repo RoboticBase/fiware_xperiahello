@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">fiware_xperiahello</string>
+    <string name="app_name">RoboticBase-core XperiaHello</string>
+    <string name="settings">Settings</string>
+    <string name="cancel">Cancel</string>
 </resources>
