@@ -2,6 +2,7 @@
     <string name="app_name">RoboticBase-core XperiaHello</string>
     <string name="settings">Settings</string>
     <string name="cancel">Cancel</string>
+
     <string name="settings_cagetogy_broker">MQTT Broker</string>
     <string name="settings_item_mqtt_host_key">host</string>
     <string name="settings_item_mqtt_host_title">Host</string>
@@ -21,6 +22,51 @@
     <string name="settings_item_mqtt_base_topic_key">base_topic</string>
     <string name="settings_item_mqtt_base_topic_title">BaseTopic</string>
     <string name="settings_item_mqtt_base_topic_summary">MQTT Brokerのbase topic</string>
+
+    <string name="settings_category_motion">Motion</string>
+    <string name="settings_item_motion_turn_angle_key">turn_angle</string>
+    <string name="settings_item_motion_turn_angle_title">Turn Angle</string>
+    <string name="settings_item_motion_turn_angle_default">60</string>
+    <string name="settings_item_motion_turn_angle_summary">人検知時のロボットの回転角度(0 - 180)</string>
+    <string name="settings_item_motion_turn_duration_msec_key">turn_duration_msec</string>
+    <string name="settings_item_motion_turn_duration_msec_title">Turn Duratio (msec)</string>
+    <string name="settings_item_motion_turn_duration_msec_default">2000</string>
+    <string name="settings_item_motion_turn_duration_msec_summary">人検知時のロボット回転に要する時間（ミリ秒）</string>
+    <string name="settings_item_motion_idol_interval_msec_key">idol_interval_msec</string>
+    <string name="settings_item_motion_idol_interval_msec_title">Idol Interval (msec)</string>
+    <string name="settings_item_motion_idol_interval_msec_default">5000</string>
+    <string name="settings_item_motion_idol_interval_msec_summary">アイドルモーションの間隔（ミリ秒）</string>
+
+    <string name="settings_category_talk">Talk</string>
+    <string name="settings_item_talk_greet_message_key">greet_message</string>
+    <string name="settings_item_talk_greet_message_title">Greet Message</string>
+    <string name="settings_item_talk_greet_message_default">こんにちは！ デモを見ていきませんか？</string>
+    <string name="settings_item_talk_greet_message_summary">人検知時にロボットが話すメッセージ</string>
+    <string name="settings_item_talk_interval_sec_key">talk_interval_sec</string>
+    <string name="settings_item_talk_interval_sec_title">Talk Interval (sec)</string>
+    <string name="settings_item_talk_interval_sec_default">15</string>
+    <string name="settings_item_talk_interval_sec_summary">人検知時にロボットが話す最短間隔（秒）</string>
+    <string name="settings_item_talk_start_demo_message_key">start_demo_message</string>
+    <string name="settings_item_talk_start_demo_message_title">Start Demo Message</string>
+    <string name="settings_item_talk_start_demo_message_default">お好きなボタンを押してください</string>
+    <string name="settings_item_talk_start_demo_message_summary">デモ開始時にロボットが話すメッセージ</string>
+    <string name="settings_item_talk_triangle_message_key">triangle_message</string>
+    <string name="settings_item_talk_triangle_message_title">Triangle Message</string>
+    <string name="settings_item_talk_triangle_message_default">誘導ロボットを三角に動かします</string>
+    <string name="settings_item_talk_triangle_message_summary">△ボタン押下時にロボットが話すメッセージ</string>
+    <string name="settings_item_talk_square_message_key">square_message</string>
+    <string name="settings_item_talk_square_message_title">Square Message</string>
+    <string name="settings_item_talk_square_message_default">誘導ロボットを四角く動かします</string>
+    <string name="settings_item_talk_square_message_summary">□ボタン押下時にロボットが話すメッセージ</string>
+    <string name="settings_item_talk_circle_message_key">circle_message</string>
+    <string name="settings_item_talk_circle_message_title">Circle Message</string>
+    <string name="settings_item_talk_circle_message_default">誘導ロボットを丸く動かします</string>
+    <string name="settings_item_talk_circle_message_summary">◯ボタン押下時にロボットが話すメッセージ</string>
+    <string name="settings_item_talk_cross_message_key">cross_message</string>
+    <string name="settings_item_talk_cross_message_title">Cross Message</string>
+    <string name="settings_item_talk_cross_message_default">誘導ロボットを停止します</string>
+    <string name="settings_item_talk_cross_message_summary">✕ボタン押下時にロボットが話すメッセージ</string>
+
     <string name="main_title">RoboticBase-core</string>
     <string name="main_button">デモを\n始める</string>
     <string name="triangle_button">\u25B3</string>
