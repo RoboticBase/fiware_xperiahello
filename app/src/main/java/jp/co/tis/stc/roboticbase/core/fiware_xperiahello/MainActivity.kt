@@ -221,7 +221,7 @@ class MainActivity : ClientAPIImplActivity(), Mixin {
                 mAPI?.startMotion(file)
             }
         }
-        future = scheduler?.scheduleWithFixedDelay(task, 0, idolIntervalMsec, TimeUnit.MILLISECONDS);
+        future = scheduler?.scheduleWithFixedDelay(task, 100, idolIntervalMsec, TimeUnit.MILLISECONDS);
     }
 
     // mAPI callback

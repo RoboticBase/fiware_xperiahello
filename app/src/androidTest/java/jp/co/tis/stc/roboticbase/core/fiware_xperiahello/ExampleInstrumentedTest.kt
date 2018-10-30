@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getTargetContext()
-        assertEquals("jp.co.tis.stc.boboticbase.core.fiware_xperiahello", appContext.packageName)
+        assertEquals("jp.co.tis.stc.roboticbase.core.fiware_xperiahello", appContext.packageName)
     }
 }
