@@ -47,7 +47,7 @@ class MainActivity : ClientAPIImplActivity(), Mixin {
 
     private var scheduler: ScheduledExecutorService? = null
     private var future: ScheduledFuture<*>? = null
-    private var mAPI: ClientAPI? = null
+    internal var mAPI: ClientAPI? = null
 
     // Lifecycle
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -221,7 +221,7 @@ class MainActivity : ClientAPIImplActivity(), Mixin {
                 mAPI?.startMotion(file)
             }
         }
-        future = scheduler?.scheduleWithFixedDelay(task, 100, idolIntervalMsec, TimeUnit.MILLISECONDS);
+        future = scheduler?.scheduleWithFixedDelay(task, 1000, idolIntervalMsec, TimeUnit.MILLISECONDS);
     }
 
     // mAPI callback
@@ -276,11 +276,11 @@ class MainActivity : ClientAPIImplActivity(), Mixin {
         val turnAngle = sharedPref?.getString(getString(R.string.settings_item_motion_turn_angle_key), "60")?.toInt() ?: 60
         val turnDurationMsec = sharedPref?.getString(getString(R.string.settings_item_motion_turn_duration_msec_key), "2000")?.toInt() ?: 2000
         val greetMessage = sharedPref?.getString(getString(R.string.settings_item_talk_greet_message_key), "") ?: ""
-        val talkIntervalSec = sharedPref?.getString(getString(R.string.settings_item_talk_interval_sec_key), "15")?.toInt() ?: 15
+        val talkIntervalSec = sharedPref?.getString(getString(R.string.settings_item_talk_interval_sec_key), "0")?.toInt() ?: 0
 
         fun greet() {
             val now = LocalDateTime.now()
-            if (ChronoUnit.SECONDS.between(current, now) > talkIntervalSec) {
+            if (ChronoUnit.SECONDS.between(current, now) >= talkIntervalSec) {
                 if (!isSpeak) {
                     Log.d(TAG, "say '$greetMessage'")
                     isSpeak = true
