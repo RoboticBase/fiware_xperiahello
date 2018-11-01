@@ -5,6 +5,7 @@ import android.app.Application
 import android.content.Intent
 import android.media.AudioManager
 import android.os.Build
+import android.preference.PreferenceManager
 import androidx.test.core.app.ApplicationProvider
 import com.nhaarman.mockito_kotlin.mock
 import com.sonymobile.smartproduct.xperia_hello_sdk_clientapi.APIdefinitions
@@ -159,9 +160,15 @@ class MainActivityTest {
         }
     }
 
-    @RunWith(RobolectricTestRunner::class)
+    @RunWith(ParameterizedRobolectricTestRunner::class)
     @Config(sdk = [(Build.VERSION_CODES.O)])
-    class ButtonTest : TestHelper, Mixin {
+    class ButtonTest(private val hasSharedPref: Boolean, private val buttonKey: String?) : TestHelper, Mixin {
+        val TALK_START_MESSAGE = "tark start message"
+        val TRIANGLE_MESSAGE = "triangle message"
+        val SQUARE_MESSAGE = "square message"
+        val CIRCLE_MESSAGE = "circle message"
+        val CROSS_MESSAGE = "cross message"
+
         var activity: MainActivity? = null
         var mockedmAPI: ClientAPI? = null
 
@@ -173,6 +180,18 @@ class MainActivityTest {
             val future = getPrivateProperty(activity!!, "future") as ScheduledFuture<*>
             future.cancel(true)
             activity!!.mAPI = mockedmAPI
+
+            if (hasSharedPref) {
+                val context = ApplicationProvider.getApplicationContext<Application>()
+                val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
+                val editor = sharedPref.edit()
+                editor.putString(activity!!.getString(R.string.settings_item_talk_start_demo_message_key), TALK_START_MESSAGE)
+                editor.putString(activity!!.getString(R.string.settings_item_talk_triangle_message_key), TRIANGLE_MESSAGE)
+                editor.putString(activity!!.getString(R.string.settings_item_talk_square_message_key), SQUARE_MESSAGE)
+                editor.putString(activity!!.getString(R.string.settings_item_talk_circle_message_key), CIRCLE_MESSAGE)
+                editor.putString(activity!!.getString(R.string.settings_item_talk_cross_message_key), CROSS_MESSAGE)
+                editor.commit()
+            }
         }
 
         @Test
@@ -189,16 +208,61 @@ class MainActivityTest {
             assertFalse(getPrivateProperty(activity, "willEyeClose") as Boolean)
 
             verify(mockedmAPI, times(1))!!.stopSpeak()
-            verify(mockedmAPI, times(1))!!.startSpeak("", AudioManager.STREAM_MUSIC, true)
+            if (hasSharedPref) {
+                verify(mockedmAPI, times(1))!!.startSpeak(TALK_START_MESSAGE, AudioManager.STREAM_MUSIC, true)
+            } else {
+                verify(mockedmAPI, times(1))!!.startSpeak("", AudioManager.STREAM_MUSIC, true)
+            }
 
             shadowOf(activity).receiveResult(
                     Intent(activity, OperationActivity::class.java),
                     Activity.RESULT_OK,
-                    Intent().putExtra(OPERATION_RESULT_KEY, "dummy")
+                    buttonKey?.let {Intent().putExtra(OPERATION_RESULT_KEY, it)}
             )
             assertTrue(getPrivateProperty(activity, "isSpeak") as Boolean)
             verify(mockedmAPI, times(2))!!.stopSpeak()
-            verify(mockedmAPI, times(2))!!.startSpeak("", AudioManager.STREAM_MUSIC, true)
+            if (hasSharedPref) {
+                when (buttonKey) {
+                    TRIANGLE_BUTTON -> {
+                        verify(mockedmAPI, times(1))!!.startSpeak(TRIANGLE_MESSAGE, AudioManager.STREAM_MUSIC, true)
+                    }
+                    SQUARE_BUTTON -> {
+                        verify(mockedmAPI, times(1))!!.startSpeak(SQUARE_MESSAGE, AudioManager.STREAM_MUSIC, true)
+                    }
+                    CIRCLE_BUTTON -> {
+                        verify(mockedmAPI, times(1))!!.startSpeak(CIRCLE_MESSAGE, AudioManager.STREAM_MUSIC, true)
+                    }
+                    CROSS_BUTTON -> {
+                        verify(mockedmAPI, times(1))!!.startSpeak(CROSS_MESSAGE, AudioManager.STREAM_MUSIC, true)
+                    }
+                    else -> {
+                        verify(mockedmAPI, times(1))!!.startSpeak("", AudioManager.STREAM_MUSIC, true)
+                    }
+                }
+            } else {
+                verify(mockedmAPI, times(2))!!.startSpeak("", AudioManager.STREAM_MUSIC, true)
+            }
+        }
+
+        companion object {
+            @ParameterizedRobolectricTestRunner.Parameters(name = "hasSharedPref = {0}, buttonKey = {1}")
+            @JvmStatic
+            fun testParams(): List<Array<Any?>> {
+                val mixIn = object:Mixin{}
+                val result = mutableListOf<Array<Any?>>()
+                for (hasSharedPref in listOf(true, false)) {
+                    for (buttonKey in listOf(
+                            mixIn.TRIANGLE_BUTTON,
+                            mixIn.SQUARE_BUTTON,
+                            mixIn.CIRCLE_BUTTON,
+                            mixIn.CROSS_BUTTON,
+                            "invalid",
+                            null)) {
+                        result.add(arrayOf(hasSharedPref, buttonKey))
+                    }
+                }
+                return result
+            }
         }
     }
 
@@ -302,8 +366,12 @@ class MainActivityTest {
     class DetectHumanBodyTest(
             private val isMove: Boolean,
             private val isSpeak: Boolean,
+            private val greetMessage: String?,
+            private val talkIntervalSec: String?,
             private val direction: IntArray?
     ) : TestHelper {
+        val GREET_MESSAGE = "greet message"
+
         var activity: MainActivity? = null
         var mockedmAPI: ClientAPI? = null
 
@@ -320,6 +388,19 @@ class MainActivityTest {
             setPrivateProperty(activity, "isSpeak", isSpeak)
             setPrivateProperty(activity, "isMotion", false)
             setPrivateProperty(activity, "isDemo", false)
+
+            if (greetMessage != null || talkIntervalSec != null) {
+                val context = ApplicationProvider.getApplicationContext<Application>()
+                val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
+                val editor = sharedPref.edit()
+                if (greetMessage != null) {
+                    editor.putString(activity!!.getString(R.string.settings_item_talk_greet_message_key), greetMessage)
+                }
+                if (talkIntervalSec != null) {
+                    editor.putString(activity!!.getString(R.string.settings_item_talk_interval_sec_key), talkIntervalSec)
+                }
+                editor.commit()
+            }
         }
 
         @Test
@@ -345,12 +426,13 @@ class MainActivityTest {
                         verify(mockedmAPI)!!.startMotion("B_ACT-101.smd")
                         verify(mockedmAPI, never())!!.startAngleOf(APIdefinitions.ANGLE_BODY, 60, 2000)
                         verify(mockedmAPI, never())!!.startAngleOf(APIdefinitions.ANGLE_BODY, -60, 2000)
-                        if (!isSpeak) {
-                            verify(mockedmAPI)!!.startSpeak("", AudioManager.STREAM_MUSIC, true)
+                        if (!isSpeak && talkIntervalSec != "600") {
+                            verify(mockedmAPI)!!.startSpeak(greetMessage ?: "", AudioManager.STREAM_MUSIC, true)
+                            assertTrue(getPrivateProperty(activity, "isSpeak") as Boolean)
                         } else {
-                            verify(mockedmAPI, never())!!.startSpeak("", AudioManager.STREAM_MUSIC, true)
+                            verify(mockedmAPI, never())!!.startSpeak(greetMessage ?: "", AudioManager.STREAM_MUSIC, true)
+                            assertEquals(isSpeak, getPrivateProperty(activity, "isSpeak"))
                         }
-                        assertTrue(getPrivateProperty(activity, "isSpeak") as Boolean)
                     } else if (intArrayOf(0, 1, 0, 0, 0, 0, 0, 0) contentEquals d ||
                             intArrayOf(0, 1, 1, 0, 0, 0, 0, 0) contentEquals d ||
                             intArrayOf(0, 1, 0, 1, 0, 0, 0, 0) contentEquals d ||
@@ -359,12 +441,13 @@ class MainActivityTest {
                         verify(mockedmAPI)!!.startMotion("B_ACT-101.smd")
                         verify(mockedmAPI)!!.startAngleOf(APIdefinitions.ANGLE_BODY, 60, 2000)
                         verify(mockedmAPI, never())!!.startAngleOf(APIdefinitions.ANGLE_BODY, -60, 2000)
-                        if (!isSpeak) {
-                            verify(mockedmAPI)!!.startSpeak("", AudioManager.STREAM_MUSIC, true)
+                        if (!isSpeak && talkIntervalSec != "600") {
+                            verify(mockedmAPI)!!.startSpeak(greetMessage ?: "", AudioManager.STREAM_MUSIC, true)
+                            assertTrue(getPrivateProperty(activity, "isSpeak") as Boolean)
                         } else {
-                            verify(mockedmAPI, never())!!.startSpeak("", AudioManager.STREAM_MUSIC, true)
+                            verify(mockedmAPI, never())!!.startSpeak(greetMessage ?: "", AudioManager.STREAM_MUSIC, true)
+                            assertEquals(isSpeak, getPrivateProperty(activity, "isSpeak"))
                         }
-                        assertTrue(getPrivateProperty(activity, "isSpeak") as Boolean)
                     } else if (intArrayOf(0, 0, 0, 0, 0, 0, 0, 1) contentEquals d ||
                             intArrayOf(0, 0, 0, 0, 0, 0, 1, 1) contentEquals d ||
                             intArrayOf(0, 0, 0, 0, 0, 1, 0, 1) contentEquals d ||
@@ -373,12 +456,13 @@ class MainActivityTest {
                         verify(mockedmAPI)!!.startMotion("B_ACT-101.smd")
                         verify(mockedmAPI)!!.startAngleOf(APIdefinitions.ANGLE_BODY, -60, 2000)
                         verify(mockedmAPI, never())!!.startAngleOf(APIdefinitions.ANGLE_BODY, 60, 2000)
-                        if (!isSpeak) {
-                            verify(mockedmAPI)!!.startSpeak("", AudioManager.STREAM_MUSIC, true)
+                        if (!isSpeak && talkIntervalSec != "600") {
+                            verify(mockedmAPI)!!.startSpeak(greetMessage ?: "", AudioManager.STREAM_MUSIC, true)
+                            assertTrue(getPrivateProperty(activity, "isSpeak") as Boolean)
                         } else {
-                            verify(mockedmAPI, never())!!.startSpeak("", AudioManager.STREAM_MUSIC, true)
+                            verify(mockedmAPI, never())!!.startSpeak(greetMessage ?: "", AudioManager.STREAM_MUSIC, true)
+                            assertEquals(isSpeak, getPrivateProperty(activity, "isSpeak"))
                         }
-                        assertTrue(getPrivateProperty(activity, "isSpeak") as Boolean)
                     } else {
                         doNothing()
                     }
@@ -389,34 +473,38 @@ class MainActivityTest {
         }
 
         companion object {
-            @ParameterizedRobolectricTestRunner.Parameters(name = "isMove = {0}, isSpeak = {1}, direction = {2}")
+            @ParameterizedRobolectricTestRunner.Parameters(name = "isMove = {0}, isSpeak = {1}, greetMessage = {2}, talkIntervalSec = {3}, direction = {4}")
             @JvmStatic
             fun testParams(): List<Array<Any?>> {
                 val result  = mutableListOf<Array<Any?>>()
-                for (isMove in listOf(true, false)) {
-                    for (isSpeak in listOf(true, false)) {
-                        for (direction in listOf(
-                                intArrayOf(0, 1, 0, 0, 0, 0, 0, 1),
-                                intArrayOf(1, 1, 0, 0, 0, 0, 0, 1),
+                    for (isMove in listOf(true, false)) {
+                        for (isSpeak in listOf(true, false)) {
+                            for (greetMessage in listOf(null, "", "greet message")) {
+                                for (talkIntervalSec in listOf(null, "0", "600")) {
+                                    for (direction in listOf(
+                                            intArrayOf(0, 1, 0, 0, 0, 0, 0, 1),
+                                            intArrayOf(1, 1, 0, 0, 0, 0, 0, 1),
 
-                                intArrayOf(0, 1, 0, 0, 0, 0, 0, 0),
-                                intArrayOf(0, 1, 1, 0, 0, 0, 0, 0),
-                                intArrayOf(0, 1, 0, 1, 0, 0, 0, 0),
-                                intArrayOf(0, 1, 1, 1, 0, 0, 0, 0),
+                                            intArrayOf(0, 1, 0, 0, 0, 0, 0, 0),
+                                            intArrayOf(0, 1, 1, 0, 0, 0, 0, 0),
+                                            intArrayOf(0, 1, 0, 1, 0, 0, 0, 0),
+                                            intArrayOf(0, 1, 1, 1, 0, 0, 0, 0),
 
-                                intArrayOf(0, 0, 0, 0, 0, 0, 0, 1),
-                                intArrayOf(0, 0, 0, 0, 0, 0, 1, 1),
-                                intArrayOf(0, 0, 0, 0, 0, 1, 0, 1),
-                                intArrayOf(0, 0, 0, 0, 0, 1, 1, 1),
+                                            intArrayOf(0, 0, 0, 0, 0, 0, 0, 1),
+                                            intArrayOf(0, 0, 0, 0, 0, 0, 1, 1),
+                                            intArrayOf(0, 0, 0, 0, 0, 1, 0, 1),
+                                            intArrayOf(0, 0, 0, 0, 0, 1, 1, 1),
 
-                                intArrayOf(0, 0, 0, 0, 0, 0, 0, 0),
-                                intArrayOf(1, 1, 1, 1, 1, 1, 1, 1),
-                                null
-                        )) {
-                            result.add(arrayOf(isMove, isSpeak, direction))
+                                            intArrayOf(0, 0, 0, 0, 0, 0, 0, 0),
+                                            intArrayOf(1, 1, 1, 1, 1, 1, 1, 1),
+                                            null
+                                    )) {
+                                        result.add(arrayOf(isMove, isSpeak, greetMessage, talkIntervalSec, direction))
+                                    }
+                                }
+                            }
                         }
                     }
-                }
                 return result
             }
         }

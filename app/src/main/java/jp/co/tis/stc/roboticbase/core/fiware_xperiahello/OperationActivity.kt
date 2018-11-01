@@ -59,16 +59,16 @@ class OperationActivity : AppCompatActivity(), Mixin {
 
     private fun setUpButton() {
         triangleButton.setOnClickListener {
-            onClickButton("triangle")
+            onClickButton(TRIANGLE_BUTTON)
         }
         squareButton.setOnClickListener {
-            onClickButton("square")
+            onClickButton(SQUARE_BUTTON)
         }
         circleButton.setOnClickListener {
-            onClickButton("circle")
+            onClickButton(CIRCLE_BUTTON)
         }
         crossButton.setOnClickListener {
-            onClickButton("cross")
+            onClickButton(CROSS_BUTTON)
         }
     }
 

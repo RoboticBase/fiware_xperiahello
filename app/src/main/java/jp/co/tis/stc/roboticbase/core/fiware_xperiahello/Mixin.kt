@@ -11,4 +11,12 @@ interface Mixin {
         get() = "RESULT_KEY"
     val CERTIFICATE_NAME
         get() = "tis.pem"
+    val TRIANGLE_BUTTON
+        get() = "triangle"
+    val SQUARE_BUTTON
+        get() = "square"
+    val CIRCLE_BUTTON
+        get() = "circle"
+    val CROSS_BUTTON
+        get() = "cross"
 }

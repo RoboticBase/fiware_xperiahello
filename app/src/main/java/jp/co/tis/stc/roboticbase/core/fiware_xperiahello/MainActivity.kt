@@ -193,10 +193,10 @@ class MainActivity : ClientAPIImplActivity(), Mixin {
             val crossMessage = sharedPref?.getString(getString(R.string.settings_item_talk_cross_message_key), "") ?: ""
 
             val message = when (data?.getStringExtra(OPERATION_RESULT_KEY)) {
-                "triangle" -> triangleMessage
-                "square" -> squareMessage
-                "circle" -> circleMessage
-                "cross" -> crossMessage
+                TRIANGLE_BUTTON -> triangleMessage
+                SQUARE_BUTTON -> squareMessage
+                CIRCLE_BUTTON -> circleMessage
+                CROSS_BUTTON -> crossMessage
                 else -> ""
             }
             Log.d(TAG, "msg=${message}")
