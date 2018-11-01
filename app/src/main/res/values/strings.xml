@@ -9,7 +9,7 @@
     <string name="settings_item_mqtt_host_summary">MQTT Brokerのホスト名</string>
     <string name="settings_item_mqtt_port_key">port</string>
     <string name="settings_item_mqtt_port_title">Port</string>
-    <string name="settings_item_mqtt_port_summary">MQTT Brokerのポート(0 - 65535)</string>
+    <string name="settings_item_mqtt_port_summary">MQTT Brokerのポート(0 ~ 65535)</string>
     <string name="settings_item_mqtt_use_ssl_key">use_ssl</string>
     <string name="settings_item_mqtt_use_ssl_title">Use ssl</string>
     <string name="settings_item_mqtt_use_ssl_summary">MQTT Brokerへの接続時にSSLを利用する</string>
@@ -27,7 +27,7 @@
     <string name="settings_item_motion_turn_angle_key">turn_angle</string>
     <string name="settings_item_motion_turn_angle_title">Turn Angle</string>
     <string name="settings_item_motion_turn_angle_default">60</string>
-    <string name="settings_item_motion_turn_angle_summary">人検知時のロボットの回転角度(0 - 180)</string>
+    <string name="settings_item_motion_turn_angle_summary">人検知時のロボットの回転角度(0 ~ 180)</string>
     <string name="settings_item_motion_turn_duration_msec_key">turn_duration_msec</string>
     <string name="settings_item_motion_turn_duration_msec_title">Turn Duratio (msec)</string>
     <string name="settings_item_motion_turn_duration_msec_default">2000</string>

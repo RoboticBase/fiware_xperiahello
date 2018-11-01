@@ -38,16 +38,15 @@ class OperationActivityTest {
             private val port: String?,
             private val username: String?,
             private val password: String?) {
-        var controller: ActivityController<OperationActivity>? = null
-        var activity: OperationActivity? = null
-        var mockedClient: MqttAndroidClient? = null
+        private var controller: ActivityController<OperationActivity>? = null
+        private var activity: OperationActivity? = null
+        private var mockedClient: MqttAndroidClient? = null
 
-        inline fun <reified T : Any> argumentCaptor() = ArgumentCaptor.forClass(T::class.java)
+        private inline fun <reified T : Any> argumentCaptor() = ArgumentCaptor.forClass(T::class.java)
 
         @Before
         fun setUp() {
-            mockedClient = mock<MqttAndroidClient> {
-            }
+            mockedClient = mock {}
             controller = Robolectric.buildActivity(OperationActivity::class.java)
             activity = controller?.get()
 
@@ -156,7 +155,7 @@ class OperationActivityTest {
                 val failureAlertDialog = ShadowAlertDialog.getLatestAlertDialog()
                 assertNotNull(failureAlertDialog)
                 assertEquals("MQTT接続失敗", shadowOf(failureAlertDialog).title)
-                assertEquals("url = $url, ${e.toString()}", shadowOf(failureAlertDialog).message)
+                assertEquals("url = $url, $e", shadowOf(failureAlertDialog).message)
                 val okButton = failureAlertDialog.getButton(Dialog.BUTTON_POSITIVE)
                 okButton.performClick()
 
@@ -180,10 +179,10 @@ class OperationActivityTest {
         }
 
         companion object {
-            val VALID_HOST = "mqtt.example.com"
-            val VALID_PORT = "8883"
-            val VALID_USERNAME = "username"
-            val VALID_PASSWORD = "password"
+            const val VALID_HOST = "mqtt.example.com"
+            const val VALID_PORT = "8883"
+            const val VALID_USERNAME = "username"
+            const val VALID_PASSWORD = "password"
 
             @ParameterizedRobolectricTestRunner.Parameters(name = "useSSL = {0}, host = {1}, port = {2}, username = {3}, password = {4}")
             @JvmStatic
@@ -211,17 +210,15 @@ class OperationActivityTest {
             private val hasClient: Boolean,
             private val isConnected: Boolean,
             private val buttonKey: String) : Mixin {
-        val BASE_TOPIC = "/topic"
+        private var activity: OperationActivity? = null
+        private var mockedClient: MqttAndroidClient? = null
 
-        var activity: OperationActivity? = null
-        var mockedClient: MqttAndroidClient? = null
-
-        inline fun <reified T : Any> argumentCaptor() = ArgumentCaptor.forClass(T::class.java)
+        private inline fun <reified T : Any> argumentCaptor() = ArgumentCaptor.forClass(T::class.java)
 
         @Before
         fun setUp() {
-            mockedClient = mock<MqttAndroidClient> {
-                on { isConnected() } doReturn isConnected
+            mockedClient = mock {
+                on { isConnected } doReturn isConnected
             }
             activity = Robolectric.setupActivity(OperationActivity::class.java)
             if (hasClient) {
@@ -265,7 +262,7 @@ class OperationActivityTest {
                     val qosCaptor = argumentCaptor<Int>()
                     val retainedCaptor = argumentCaptor<Boolean>()
 
-                    verify(mockedClient)?.isConnected()
+                    verify(mockedClient)?.isConnected
                     verify(mockedClient)?.publish(topicCaptor.capture(), payloadCpator.capture(), qosCaptor.capture(), retainedCaptor.capture())
                     assertEquals("$BASE_TOPIC/attrs", topicCaptor.value)
                     val pattern = """^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?\+09:00\|button\|$buttonKey$"""
@@ -281,16 +278,18 @@ class OperationActivityTest {
                     okButton.performClick()
                     verify(mockedClient, never())?.connect(any(MqttConnectOptions::class.java), any(Object::class.java), any(IMqttActionListener::class.java))
 
-                    verify(mockedClient)?.isConnected()
+                    verify(mockedClient)?.isConnected
                     verify(mockedClient, never())!!.publish(anyString(), any(byteArrayOf()::class.java), anyInt(), anyBoolean())
                 }
             } else {
-                verify(mockedClient, never())!!.isConnected()
+                verify(mockedClient, never())!!.isConnected
                 verify(mockedClient, never())!!.publish(anyString(), any(byteArrayOf()::class.java), anyInt(), anyBoolean())
             }
         }
 
         companion object {
+            const val BASE_TOPIC = "/topic"
+
             @ParameterizedRobolectricTestRunner.Parameters(name = "hasClient = {0}, isConnected = {1}, buttonKey = {2}")
             @JvmStatic
             fun testParams(): List<Array<Any>> {

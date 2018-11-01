@@ -106,8 +106,8 @@ class MainActivityTest {
             @JvmStatic
             fun testParams(): List<Array<out Boolean>> {
                 return listOf(
-                        arrayOf<Boolean>(true),
-                        arrayOf<Boolean>(false))
+                        arrayOf(true),
+                        arrayOf(false))
             }
         }
     }
@@ -115,13 +115,12 @@ class MainActivityTest {
     @RunWith(RobolectricTestRunner::class)
     @Config(sdk = [(Build.VERSION_CODES.O)])
     class SettingsTest : TestHelper {
-        var activity: MainActivity? = null
-        var mockedmAPI: ClientAPI? = null
+        private var activity: MainActivity? = null
+        private var mockedmAPI: ClientAPI? = null
 
         @Before
         fun setUp() {
-            mockedmAPI = mock<ClientAPI> {
-            }
+            mockedmAPI = mock {}
             activity = Robolectric.setupActivity(MainActivity::class.java)
             val future = getPrivateProperty(activity!!, "future") as ScheduledFuture<*>
             future.cancel(true)
@@ -163,19 +162,12 @@ class MainActivityTest {
     @RunWith(ParameterizedRobolectricTestRunner::class)
     @Config(sdk = [(Build.VERSION_CODES.O)])
     class ButtonTest(private val hasSharedPref: Boolean, private val buttonKey: String?) : TestHelper, Mixin {
-        val TALK_START_MESSAGE = "tark start message"
-        val TRIANGLE_MESSAGE = "triangle message"
-        val SQUARE_MESSAGE = "square message"
-        val CIRCLE_MESSAGE = "circle message"
-        val CROSS_MESSAGE = "cross message"
-
-        var activity: MainActivity? = null
-        var mockedmAPI: ClientAPI? = null
+        private var activity: MainActivity? = null
+        private var mockedmAPI: ClientAPI? = null
 
         @Before
         fun setUp() {
-            mockedmAPI = mock<ClientAPI> {
-            }
+            mockedmAPI = mock {}
             activity = Robolectric.setupActivity(MainActivity::class.java)
             val future = getPrivateProperty(activity!!, "future") as ScheduledFuture<*>
             future.cancel(true)
@@ -245,6 +237,12 @@ class MainActivityTest {
         }
 
         companion object {
+            const val TALK_START_MESSAGE = "tark start message"
+            const val TRIANGLE_MESSAGE = "triangle message"
+            const val SQUARE_MESSAGE = "square message"
+            const val CIRCLE_MESSAGE = "circle message"
+            const val CROSS_MESSAGE = "cross message"
+
             @ParameterizedRobolectricTestRunner.Parameters(name = "hasSharedPref = {0}, buttonKey = {1}")
             @JvmStatic
             fun testParams(): List<Array<Any?>> {
@@ -269,13 +267,12 @@ class MainActivityTest {
     @RunWith(ParameterizedRobolectricTestRunner::class)
     @Config(sdk = [(Build.VERSION_CODES.O)])
     class APICallbackTest(private val result: Boolean) : TestHelper {
-        var activity: MainActivity? = null
-        var mockedmAPI: ClientAPI? = null
+        private var activity: MainActivity? = null
+        private var mockedmAPI: ClientAPI? = null
 
         @Before
         fun setUp() {
-            mockedmAPI = mock<ClientAPI> {
-            }
+            mockedmAPI = mock {}
             activity = Robolectric.setupActivity(MainActivity::class.java)
             val future = getPrivateProperty(activity!!, "future") as ScheduledFuture<*>
             future.cancel(true)
@@ -355,8 +352,8 @@ class MainActivityTest {
             @JvmStatic
             fun testParams(): List<Array<out Boolean>> {
                 return listOf(
-                        arrayOf<Boolean>(true),
-                        arrayOf<Boolean>(false))
+                        arrayOf(true),
+                        arrayOf(false))
             }
         }
     }
@@ -370,15 +367,12 @@ class MainActivityTest {
             private val talkIntervalSec: String?,
             private val direction: IntArray?
     ) : TestHelper {
-        val GREET_MESSAGE = "greet message"
-
-        var activity: MainActivity? = null
-        var mockedmAPI: ClientAPI? = null
+        private var activity: MainActivity? = null
+        private var mockedmAPI: ClientAPI? = null
 
         @Before
         fun setUp() {
-            mockedmAPI = mock<ClientAPI> {
-            }
+            mockedmAPI = mock {}
             activity = Robolectric.setupActivity(MainActivity::class.java)
             val future = getPrivateProperty(activity!!, "future") as ScheduledFuture<*>
             future.cancel(true)
@@ -477,34 +471,34 @@ class MainActivityTest {
             @JvmStatic
             fun testParams(): List<Array<Any?>> {
                 val result  = mutableListOf<Array<Any?>>()
-                    for (isMove in listOf(true, false)) {
-                        for (isSpeak in listOf(true, false)) {
-                            for (greetMessage in listOf(null, "", "greet message")) {
-                                for (talkIntervalSec in listOf(null, "0", "600")) {
-                                    for (direction in listOf(
-                                            intArrayOf(0, 1, 0, 0, 0, 0, 0, 1),
-                                            intArrayOf(1, 1, 0, 0, 0, 0, 0, 1),
+                for (isMove in listOf(true, false)) {
+                    for (isSpeak in listOf(true, false)) {
+                        for (greetMessage in listOf(null, "", "greet message")) {
+                            for (talkIntervalSec in listOf(null, "0", "600")) {
+                                for (direction in listOf(
+                                        intArrayOf(0, 1, 0, 0, 0, 0, 0, 1),
+                                        intArrayOf(1, 1, 0, 0, 0, 0, 0, 1),
 
-                                            intArrayOf(0, 1, 0, 0, 0, 0, 0, 0),
-                                            intArrayOf(0, 1, 1, 0, 0, 0, 0, 0),
-                                            intArrayOf(0, 1, 0, 1, 0, 0, 0, 0),
-                                            intArrayOf(0, 1, 1, 1, 0, 0, 0, 0),
+                                        intArrayOf(0, 1, 0, 0, 0, 0, 0, 0),
+                                        intArrayOf(0, 1, 1, 0, 0, 0, 0, 0),
+                                        intArrayOf(0, 1, 0, 1, 0, 0, 0, 0),
+                                        intArrayOf(0, 1, 1, 1, 0, 0, 0, 0),
 
-                                            intArrayOf(0, 0, 0, 0, 0, 0, 0, 1),
-                                            intArrayOf(0, 0, 0, 0, 0, 0, 1, 1),
-                                            intArrayOf(0, 0, 0, 0, 0, 1, 0, 1),
-                                            intArrayOf(0, 0, 0, 0, 0, 1, 1, 1),
+                                        intArrayOf(0, 0, 0, 0, 0, 0, 0, 1),
+                                        intArrayOf(0, 0, 0, 0, 0, 0, 1, 1),
+                                        intArrayOf(0, 0, 0, 0, 0, 1, 0, 1),
+                                        intArrayOf(0, 0, 0, 0, 0, 1, 1, 1),
 
-                                            intArrayOf(0, 0, 0, 0, 0, 0, 0, 0),
-                                            intArrayOf(1, 1, 1, 1, 1, 1, 1, 1),
-                                            null
-                                    )) {
-                                        result.add(arrayOf(isMove, isSpeak, greetMessage, talkIntervalSec, direction))
-                                    }
+                                        intArrayOf(0, 0, 0, 0, 0, 0, 0, 0),
+                                        intArrayOf(1, 1, 1, 1, 1, 1, 1, 1),
+                                        null
+                                )) {
+                                    result.add(arrayOf(isMove, isSpeak, greetMessage, talkIntervalSec, direction))
                                 }
                             }
                         }
                     }
+                }
                 return result
             }
         }
