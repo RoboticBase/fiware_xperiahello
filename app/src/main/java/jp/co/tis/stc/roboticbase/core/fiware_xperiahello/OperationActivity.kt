@@ -20,12 +20,11 @@ import java.time.format.DateTimeFormatter
 
 class OperationActivity : AppCompatActivity(), Mixin {
     private var sharedPref : SharedPreferences? = null
-    private var client: MqttAndroidClient? = null
+    internal var client: MqttAndroidClient? = null
     private var options: MqttConnectOptions? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        hideSystemUI()
         setContentView(R.layout.activity_operation)
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
         setUpView()
@@ -83,12 +82,12 @@ class OperationActivity : AppCompatActivity(), Mixin {
 
     private fun setUpMQTT() {
         val context = this
-        val schema = sharedPref?.getBoolean(getString(R.string.settings_item_mqtt_use_ssl_key), false)?.let{if (it) "ssl" else "tcp"}
-        val host = sharedPref?.getString(getString(R.string.settings_item_mqtt_host_key), "")
-        val port = sharedPref?.getString(getString(R.string.settings_item_mqtt_port_key), "")
+        val schema = sharedPref?.getBoolean(getString(R.string.settings_item_mqtt_use_ssl_key), false)?.let{if (it) "ssl" else "tcp"} ?: "tcp"
+        val host = sharedPref?.getString(getString(R.string.settings_item_mqtt_host_key), "") ?: ""
+        val port = sharedPref?.getString(getString(R.string.settings_item_mqtt_port_key), "") ?: ""
         val url = "$schema://$host:$port"
 
-        val urlRe = Regex("""^(tls|ssl):\/\/[\w-\.]+:\d+${'$'}""")
+        val urlRe = Regex("""^(ssl|tcp):\/\/[\w-\.]+:\d+${'$'}""")
         if (!urlRe.matches(url)) {
             AlertDialog.Builder(context)
                     .setTitle("MQTT接続失敗")
@@ -98,7 +97,9 @@ class OperationActivity : AppCompatActivity(), Mixin {
             return
         }
 
-        client = object : MqttAndroidClient(baseContext, url, MqttClient.generateClientId()) {}
+        if (client == null) {
+            client = object : MqttAndroidClient(baseContext, url, MqttClient.generateClientId()) {}
+        }
 
         options = MqttConnectOptions()
         options?.setCleanSession(true)
@@ -131,7 +132,7 @@ class OperationActivity : AppCompatActivity(), Mixin {
 
     private fun publish(move: String) {
         val c = client ?: return
-        val baseTopic = sharedPref?.getString(getString(R.string.settings_item_mqtt_base_topic_key), "")
+        val baseTopic = sharedPref?.getString(getString(R.string.settings_item_mqtt_base_topic_key), "") ?: ""
         if (c.isConnected()) {
             val dt = ZonedDateTime.now(ZoneId.of("Asia/Tokyo"))
             val msg = "${DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(dt)}|button|$move"
