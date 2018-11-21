@@ -47,7 +47,7 @@ class MainActivity : ClientAPIImplActivity(), Mixin {
 
     private var scheduler: ScheduledExecutorService? = null
     private var future: ScheduledFuture<*>? = null
-    private var mAPI: ClientAPI? = null
+    internal var mAPI: ClientAPI? = null
 
     // Lifecycle
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -108,7 +108,7 @@ class MainActivity : ClientAPIImplActivity(), Mixin {
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
-        toolbar.setTranslationY(statusBarHeight.toFloat())
+        toolbar.translationY = statusBarHeight.toFloat()
         if (hasFocus) hideSystemUI()
     }
 
@@ -137,7 +137,7 @@ class MainActivity : ClientAPIImplActivity(), Mixin {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         when (requestCode) {
             PERMISSION_REQUEST_CODE -> {
-                if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     initializeAPI()
                 } else {
                     finish()
@@ -193,13 +193,13 @@ class MainActivity : ClientAPIImplActivity(), Mixin {
             val crossMessage = sharedPref?.getString(getString(R.string.settings_item_talk_cross_message_key), "") ?: ""
 
             val message = when (data?.getStringExtra(OPERATION_RESULT_KEY)) {
-                "triangle" -> triangleMessage
-                "square" -> squareMessage
-                "circle" -> circleMessage
-                "cross" -> crossMessage
+                TRIANGLE_BUTTON -> triangleMessage
+                SQUARE_BUTTON -> squareMessage
+                CIRCLE_BUTTON -> circleMessage
+                CROSS_BUTTON -> crossMessage
                 else -> ""
             }
-            Log.d(TAG, "msg=${message}")
+            Log.d(TAG, "msg=$message")
             mAPI?.stopSpeak()
             isSpeak = true
             mAPI?.startSpeak(message, AudioManager.STREAM_MUSIC, true)
@@ -210,7 +210,7 @@ class MainActivity : ClientAPIImplActivity(), Mixin {
     private fun newTimerTask()  {
         val idolIntervalMsec = sharedPref?.getString(getString(R.string.settings_item_motion_idol_interval_msec_key), "5000")?.toLong() ?: 5000
 
-        scheduler = Executors.newSingleThreadScheduledExecutor();
+        scheduler = Executors.newSingleThreadScheduledExecutor()
         val task = Runnable {
             if (isMove || isMotion || isDemo) return@Runnable
             val r = (Math.random() * 16).roundToInt()
@@ -221,7 +221,7 @@ class MainActivity : ClientAPIImplActivity(), Mixin {
                 mAPI?.startMotion(file)
             }
         }
-        future = scheduler?.scheduleWithFixedDelay(task, 0, idolIntervalMsec, TimeUnit.MILLISECONDS);
+        future = scheduler?.scheduleWithFixedDelay(task, 1000, idolIntervalMsec, TimeUnit.MILLISECONDS)
     }
 
     // mAPI callback
@@ -276,11 +276,11 @@ class MainActivity : ClientAPIImplActivity(), Mixin {
         val turnAngle = sharedPref?.getString(getString(R.string.settings_item_motion_turn_angle_key), "60")?.toInt() ?: 60
         val turnDurationMsec = sharedPref?.getString(getString(R.string.settings_item_motion_turn_duration_msec_key), "2000")?.toInt() ?: 2000
         val greetMessage = sharedPref?.getString(getString(R.string.settings_item_talk_greet_message_key), "") ?: ""
-        val talkIntervalSec = sharedPref?.getString(getString(R.string.settings_item_talk_interval_sec_key), "15")?.toInt() ?: 15
+        val talkIntervalSec = sharedPref?.getString(getString(R.string.settings_item_talk_interval_sec_key), "0")?.toInt() ?: 0
 
         fun greet() {
             val now = LocalDateTime.now()
-            if (ChronoUnit.SECONDS.between(current, now) > talkIntervalSec) {
+            if (ChronoUnit.SECONDS.between(current, now) >= talkIntervalSec) {
                 if (!isSpeak) {
                     Log.d(TAG, "say '$greetMessage'")
                     isSpeak = true

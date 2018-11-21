@@ -2,5 +2,4 @@
 <resources>
     <dimen name="mainTitleSize">42sp</dimen>
     <dimen name="mainButtonSize">92sp</dimen>
-    <dimen name="demoButtonSize">56sp</dimen>
 </resources>
